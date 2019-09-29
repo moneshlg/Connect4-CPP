@@ -59,34 +59,14 @@ int main() {
 				board[row][col] = ' ';
 
 		int game_mode = 0;
-		cout << "Please select game mode: 0. 2player mode 1. debug mode. 2. vsCPU mode" << endl;
+		cout << "Please select game mode: 0. 2player mode 1. vsCPU mode" << endl;
 		cin >> game_mode;
-		if (game_mode == 1) {
-			board[5][0] = 'x';
-			board[2][1] = 'x';
-			board[4][1] = 'x';
-			board[2][2] = 'x';
-			board[3][2] = 'x';
-			board[4][2] = 'x';
-			board[4][3] = 'x';
-			board[4][5] = 'x';
-
-			board[3][1] = 'o';
-			board[5][1] = 'o';
-			board[5][2] = 'o';
-			board[3][3] = 'o';
-			board[5][3] = 'o';
-			board[5][5] = 'o';
-			board[5][6] = 'o';
-			// board[][] = 'x';
-			disc = 'x';  // 'x' first
-		}
-		else if(game_mode== 0) {
+		if(game_mode== 0) {
 			srand(time(NULL));
 			int whogofirst = rand() % 2; //pick random player to start
 			disc = (whogofirst == 0 ? 'x' : 'o');
 		}
-		else if(game_mode ==2){
+		else if(game_mode ==1){
 			cout<< "This is the vs CPU mode. Please Choose Difficulty. Type e for easy, m for medium, h for hard."<<endl;
 			cin >> difficulty;
 			srand(time(NULL));
@@ -99,7 +79,7 @@ int main() {
 
 	// game loop
 		do {
-			if(game_mode == 0|| game_mode ==1){
+			if(game_mode == 0){
 				cout << "It's player " << disc << "'s turn. Enter the column to drop your disc:" << endl;
 				// select a col to drop the disc
 				// input validation enforced
