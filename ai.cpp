@@ -1,5 +1,5 @@
 /*
- * personalized.cpp
+ * ai.cpp
  *
  *  Created on: Sep 26, 2019
  *      Author: Monesh
@@ -56,30 +56,17 @@ int drop_disc(char board[][BOARDWIDTH], int height, int width, int col, char dis
 // if yes, return true
 bool check_4_in_a_col(const char board[][BOARDWIDTH], int height, int width, int row, int col, char disc) {
 	if(row>=height-3) return false;
-	uint8_t counter =0;
-	for(int i =0; i<4; i++){
-		if(board[row+i][col] == disc) counter++;
-		else counter =0;
-	}
-	return counter>=4?true:false;
+	if(board[row][col] == disc && board[row+1][col] == disc && board[row+2][col] == disc && board[row+3][col] == disc) return true;
+	return false;
 }
 
 // TASK 3
 // check whether the newly dropped disc at (row, col) creates 4-in-a-row
 // if yes, return true
 bool check_4_in_a_row(const char board[][BOARDWIDTH], int height, int width, int row, int col, char disc) {
-	uint8_t begin =0,counter =0;
-	for(int i =0; i<width; i++){
-		if(board[row][i] == disc) {
-			begin = i;
-			break;
-		}
+	for(int i = 0; i<width-3; i++){
+		if(board[row][col] == disc && board[row][col+1] == disc && board[row][col+2] == disc && board[row][col+3] == disc) return true;
 	}
-	for(int i=0; i<4; i++){
-		if(board[row][begin+i] == disc) counter++;
-		else return false;
-	}
-	if(counter == 4)return true;
 	return false;
 }
 
@@ -88,40 +75,29 @@ bool check_4_in_a_row(const char board[][BOARDWIDTH], int height, int width, int
 // both diagonal directions count
 // if yes, return true
 bool check_4_in_a_diagonal(const char board[][BOARDWIDTH], int height, int width, int row, int col, char disc) {
-	uint8_t maxrow =row, maxcol =col, minrow =row, mincol =col, leftcount =0, rightcount =0, begin1 =0, begin2=0;
-	while(maxrow!= height && maxcol!= width){
+	uint8_t maxrow =row, maxcol =col, minrow =row, mincol =col;
+	while(maxrow!= height-1 && maxcol!= width-1){
 		maxrow++;
 		maxcol++;
 	}
-	while(minrow!=0 && mincol!=width){
+	while(minrow!=0 && mincol!=width-1){
 		minrow --;
 		mincol ++;
 	}
 	//left counting
-	for(int i = maxrow, j = maxcol; i>=0 && j>=0; i--, j--){
-		if(board[i][j] == disc){
-			begin1 =i;
-			begin2 =j;
-			break;
-		}
-	}
-	for(int i =0;i<4; i++){
-		if(begin1-i>=0 && begin2-i>=0 && board[begin1-i][begin2-i] == disc)
-			leftcount++;
+	for(int i =0;i<(maxrow<maxcol?maxrow:maxcol)-3; i++){
+			if(board[maxrow-i][maxcol-i] == disc && board[maxrow-i-1][maxcol-i-1] == disc && board[maxrow-i-2][maxcol-i-2] == disc&& board[maxrow-i-3][maxcol-i-3] == disc){
+				return true;
+			}
 	}
 	//right counting
-	for(int i = minrow, j = mincol; i<height && j>=0; i++, j--){
-		if(board[i][j] == disc){
-			begin1 =i;
-			begin2 =j;
-			break;
-		}
+	for(int i =0;i<((height-1-minrow)<mincol?(height-1-minrow):mincol)-3; i++){
+			if(board[minrow+i][mincol-i] == disc && board[minrow+i+1][mincol-i-1]== disc && board[minrow+i+2][mincol-i-2]== disc&& board[minrow+i+3][mincol-i-3] == disc){
+				return true;
+			}
 	}
-	for(int i =0;i<4; i++){
-		if(begin1+i<height && begin2-i>=0 && board[begin1+i][begin2-i] == disc)
-			rightcount++;
-	}
-	return (leftcount==4 || rightcount ==4)?true: false;
+
+	return false;
 }
 
 // check whether the game board is full
@@ -137,10 +113,16 @@ bool check_board_full(const char board[][BOARDWIDTH], int height, int width){
 // check whether a dropped disc triggers the finish of the game
 // if yes, e.g. a player wins, or game draws, return true
 bool check_game_over(const char board[][BOARDWIDTH], int height, int width, int row, int col, char disc) {
-	if (check_4_in_a_col(board, height, width, row, col, disc) ||
-			check_4_in_a_row(board, height, width, row, col, disc) ||
-			check_4_in_a_diagonal(board, height, width, row, col, disc)){
-		cout << "Player " << disc << " wins!" << endl;
+	if (check_4_in_a_col(board, height, width, row, col, disc)){
+		cout << "Player " << disc << " wins! " << "col"<<endl;
+		return true;
+	}
+	if (check_4_in_a_diagonal(board, height, width, row, col, disc)){
+		cout << "Player " << disc << " wins! " << "diag"<<endl;
+		return true;
+	}
+	if (check_4_in_a_row(board, height, width, row, col, disc) ){
+		cout << "Player " << disc << " wins! " << "row"<<endl;
 		return true;
 	}
 
@@ -270,9 +252,7 @@ int CPUezinit(char board[][BOARDWIDTH]){
 }
 
 int CPUhardinit(char board[][BOARDWIDTH]){
-
-	delay(1);
-	return minimax(board, 6, true).col;
+	return minimax(board, 7, true).col;
 }
 
 int CPUmedinit(char board[][BOARDWIDTH]){
